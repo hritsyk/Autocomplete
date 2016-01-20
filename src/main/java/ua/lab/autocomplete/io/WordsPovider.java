@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
 /**
+ * provides array of words from file
  * @author I.Gritsyk
  *
  */
@@ -34,7 +35,7 @@ public class WordsPovider {
 
 	/**
 	 *
-	 * @return string with text from file
+	 * @return array of string with text from file
 	 */
 	public String[] getKeys() {
 

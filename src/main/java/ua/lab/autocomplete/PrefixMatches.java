@@ -51,20 +51,43 @@ public class PrefixMatches {
 		return numberItemAdded;
 	}
 
-	
+	/**
+	 * check if the word exist in dictionary
+	 * 
+	 * @param word
+	 * @return
+	 */
 	public boolean contains(String word) {
 
 		return trie.contains(word);
 	}
 
+	/**
+	 * delete word from dictionary
+	 * 
+	 * @param word
+	 * @return
+	 */
 	public boolean delete(String word) {
 		return trie.delete(word);
 	}
 
+	/**
+	 * size of dictionary
+	 * 
+	 * @return
+	 */
 	public int size() {
 		return trie.size();
 	}
 
+	/**
+	 * return set of words different length, begins from min length to lenght+k
+	 * 
+	 * @param pref
+	 * @param k
+	 * @return
+	 */
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
 		List<String> list = null;
 		List<String> l = (List<String>) trie.wordsWithPrefix(pref);
@@ -73,6 +96,12 @@ public class PrefixMatches {
 		return list;
 	}
 
+	/**
+	 * return set of words different length, begins from min length to lenght+k=3
+	 * 
+	 * @param pref
+	 * @return
+	 */
 	public Iterable<String> wordsWithPrefix(String pref) {
 		return wordsWithPrefix(pref, 3);
 	}
