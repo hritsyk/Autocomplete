@@ -12,6 +12,9 @@ package lab.autocomplete;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -121,19 +124,40 @@ public class PrefixMatchesTest {
 	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String, int)}.
 	 */
 	@Test
-	public void testWordsWithPrefixStringInt() {
-		when(trie.size()).thenReturn(0);
-		assertEquals(0, prefixMatches.size());
+	public void WordsWithPrefixString_ifWordExist_NotEmptyIterableReturned() {
+		List<String> ls=new ArrayList<String>();
+		ls.add("abc");
+		ls.add("abcd");
+		ls.add("abcde");
+		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
+		assertEquals(ls, prefixMatches.wordsWithPrefix("abc"));
 	}
 
 	/**
 	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
 	 */
 	@Test
-	public void testWordsWithPrefixString() {
-//		fail("Not yet implemented");
-		when(trie.size()).thenReturn(0);
-		assertEquals(0, prefixMatches.size());
+	public void WordsWithPrefixString_ifWordExist_EmptyIterableReturned() {
+		
+		List<String> ls=new ArrayList<String>();
+		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
+		assertEquals(ls, prefixMatches.wordsWithPrefix("abc"));
+		
 	}
+	/**
+	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
+	 */
+	@Test
+	public void WordsWithPrefixStringInt_ifWordExist_IterableWithKPlus1WordsReturned() {
+		
+		List<String> ls=new ArrayList<String>();
+		ls.add("abc");
+		ls.add("abcd");
+		ls.add("abcv");
+		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
+		assertEquals(ls, prefixMatches.wordsWithPrefix("abc",1));
+		
+	}
+	
 
 }
