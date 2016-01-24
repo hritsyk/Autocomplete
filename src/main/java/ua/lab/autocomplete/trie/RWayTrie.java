@@ -1,5 +1,5 @@
 /*
- *RWayTrie
+ *RWayTriePrevVersion
  *
  *Ver.
  *
@@ -9,6 +9,10 @@
  */
 package ua.lab.autocomplete.trie;
 
+import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -17,13 +21,17 @@ import java.util.Queue;
  *
  */
 public class RWayTrie implements Trie {
+	
+	
 	private static final int R = 26; // number of references in nods (lowercase
 										// character ASCII)
 	private static final int ASCII_LOW_CASE_A = 'a';
 
 	private Node root;
+	
 	private int size; // number of words in trie
 
+	private int modCount=0;
 	// R-way trie node
 	private static class Node {
 		private Integer value;
@@ -41,8 +49,10 @@ public class RWayTrie implements Trie {
 	 */
 	@Override
 	public void add(String term, Integer weight) {
-		if (!contains(term))
+		if (!contains(term)){
 			root = add(root, term, weight, 0);
+			modCount++;
+		}	
 	}
 
 	private Node add(Node x, String word, Integer weight, int d) {
@@ -76,6 +86,7 @@ public class RWayTrie implements Trie {
 	public boolean delete(String word) {
 		int prevSize = size;
 		root = delete(root, word, 0);
+		modCount--;
 		return prevSize != size;
 	}
 
@@ -113,41 +124,15 @@ public class RWayTrie implements Trie {
 	 */
 	@Override
 	public Iterable<String> wordsWithPrefix(String pref) {
-		Queue<String> queue = new LinkedList<>();
-		Queue<String> words = new LinkedList<>();
-		Queue<Node[]> path = new LinkedList<>();
+		if(pref.length()<2) return null;
 
-		Node nodeLikePref = get(root, pref, 0);
+		return new Iterable<String>() {
 
-		if (nodeLikePref == null) {
-			return new LinkedList<String>();
-		}
-		if (nodeLikePref.value != null) {
-			queue.offer(pref);
-		}
-
-		path.offer(nodeLikePref.next);
-		words.offer(pref);
-
-		while (!path.isEmpty()) {
-
-			Node[] lastNode = path.poll();
-			String lastWord = words.poll();
-
-			for (int i = 0; i < R; i++) {
-
-				if (lastNode[i] != null) {
-
-					if (lastNode[i].value != null) {
-						queue.offer(lastWord + (char) (i + ASCII_LOW_CASE_A));
-					}
-					path.offer(lastNode[i].next);
-					words.offer(lastWord + (char) (i + ASCII_LOW_CASE_A));
-				}
+			@Override
+			public Iterator<String> iterator() {
+				return new TrieIterator(pref);
 			}
-		}
-
-		return queue;
+		};
 	}
 
 	/*
@@ -170,8 +155,104 @@ public class RWayTrie implements Trie {
 			return null;
 		if (d == key.length())
 			return x;
-		int c = key.charAt(d) - ASCII_LOW_CASE_A;
-		return get(x.next[c], key, d + 1);
+		int i = key.charAt(d) - ASCII_LOW_CASE_A;
+		return get(x.next[i], key, d + 1);
+	}
+
+	private char charByCode(int i) {
+		return (char) (i + ASCII_LOW_CASE_A);
+	}
+
+	private boolean ifArrayNotEmpty(Node[] nodes, int from) {
+		for (int i = from; i < nodes.length; i++) {
+			if (nodes[i] != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private class TrieIterator implements Iterator<String> {
+		
+		private String pref;
+		private Node nodeLikePref;
+		private String currentWord;
+		private int expectedModCoun;
+
+		private Deque<String> words = new LinkedList<>();
+		private Deque<Node[]> path = new LinkedList<>();
+
+		/**
+		 * @param pref
+		 */
+		public TrieIterator(String pref) {
+			expectedModCoun=modCount;
+			this.pref = pref;
+			nodeLikePref = get(root, pref, 0);
+
+			if (nodeLikePref != null) {
+				if (ifArrayNotEmpty(nodeLikePref.next, 0)) {
+					path.offer(nodeLikePref.next);
+					words.offer(pref);
+				}
+
+				if (nodeLikePref.value != null) {
+					currentWord = pref;
+				}
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !path.isEmpty() || currentWord != null;
+		}
+
+		@Override
+		public String next() {
+			if(expectedModCoun!=modCount) throw new ConcurrentModificationException();
+			
+			String word = null;
+			if (currentWord != null) {
+				word = currentWord;
+				currentWord = null;
+			} else {
+				word = getWord();
+			}
+
+			return word;
+		}
+
+		private String getWord() {
+			while (!path.isEmpty()) {
+				Node[] lastNodes = path.poll();
+				String lastWord = words.poll();
+
+				for (int i = 0; i < R; i++) {
+
+					if (lastNodes[i] != null) {
+						if (ifArrayNotEmpty(lastNodes[i].next, 0)) {
+							path.offer(lastNodes[i].next);
+							words.offer(lastWord + charByCode(i));
+						}
+						
+						Node tmp = lastNodes[i];
+						lastNodes[i] = null;
+
+						if (tmp.value != null) {
+							if ((i != R - 1) && ifArrayNotEmpty(lastNodes, i)) {
+								path.addFirst(lastNodes);
+								words.addFirst(lastWord);
+							}
+							return lastWord + charByCode(i);
+						}
+
+					}
+
+				}
+			}
+			return null;
+		}
+
 	}
 
 }

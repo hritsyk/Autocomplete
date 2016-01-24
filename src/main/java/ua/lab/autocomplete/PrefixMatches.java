@@ -9,9 +9,12 @@
  */
 package ua.lab.autocomplete;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ua.lab.autocomplete.trie.RWayTrie;
 import ua.lab.autocomplete.trie.Trie;
 
 /**
@@ -89,15 +92,27 @@ public class PrefixMatches {
 	 * @return
 	 */
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
-		List<String> list = null;
-		List<String> l = (List<String>) trie.wordsWithPrefix(pref);
-		if (pref.length() >= 2 && k >= 1)
-			list = l.stream().filter(s -> s.length() <= pref.length() + k).collect(Collectors.toList());
-		return list;
+		List<String> result=new ArrayList<>();
+		if(pref.length()<2){
+			return null;
+		}
+		
+		Iterable<String> source=trie.wordsWithPrefix(pref);
+		for(String s: source){
+			if(s.length()<=pref.length()+k){
+				result.add(s);
+			}else{
+				return result;
+			}
+			
+		}
+		
+		return result;
 	}
 
 	/**
-	 * return set of words different length, begins from min length to lenght+k=3
+	 * return set of words different length, begins from min length to
+	 * lenght+k=3
 	 * 
 	 * @param pref
 	 * @return
@@ -105,5 +120,8 @@ public class PrefixMatches {
 	public Iterable<String> wordsWithPrefix(String pref) {
 		return wordsWithPrefix(pref, 3);
 	}
+	
+	
+	
 
 }

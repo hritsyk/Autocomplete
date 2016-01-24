@@ -7,7 +7,7 @@
  *
  *© I.Gritsyk 2016. 
  */
-package lab.autocomplete;
+package ua.lab.autocomplete;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -137,7 +137,7 @@ public class PrefixMatchesTest {
 	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
 	 */
 	@Test
-	public void WordsWithPrefixString_ifWordExist_EmptyIterableReturned() {
+	public void WordsWithPrefixString_ifWordIsNotExist_EmptyIterableReturned() {
 		
 		List<String> ls=new ArrayList<String>();
 		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
@@ -158,6 +158,19 @@ public class PrefixMatchesTest {
 		assertEquals(ls, prefixMatches.wordsWithPrefix("abc",1));
 		
 	}
+	
+	/**
+	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
+	 */
+	@Test
+	public void WordsWithPrefixStringInt_ifPrefLengthLessThan2_NullReturned() {
+		
+		when(trie.wordsWithPrefix("a")).thenReturn(null);
+		assertEquals(null, prefixMatches.wordsWithPrefix("a",1));
+		
+	}
+	
+	
 	
 
 }
