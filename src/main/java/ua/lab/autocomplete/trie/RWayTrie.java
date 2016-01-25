@@ -9,29 +9,27 @@
  */
 package ua.lab.autocomplete.trie;
 
-import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * @author I.Gritsyk
  *
  */
 public class RWayTrie implements Trie {
-	
-	
+
 	private static final int R = 26; // number of references in nods (lowercase
 										// character ASCII)
 	private static final int ASCII_LOW_CASE_A = 'a';
 
 	private Node root;
-	
+
 	private int size; // number of words in trie
 
-	private int modCount=0;
+	private int modCount = 0;
+
 	// R-way trie node
 	private static class Node {
 		private Integer value;
@@ -49,10 +47,10 @@ public class RWayTrie implements Trie {
 	 */
 	@Override
 	public void add(String term, Integer weight) {
-		if (!contains(term)){
+		if (!contains(term)) {
 			root = add(root, term, weight, 0);
 			modCount++;
-		}	
+		}
 	}
 
 	private Node add(Node x, String word, Integer weight, int d) {
@@ -124,7 +122,8 @@ public class RWayTrie implements Trie {
 	 */
 	@Override
 	public Iterable<String> wordsWithPrefix(String pref) {
-		if(pref.length()<2) return null;
+		if (pref.length() < 2)
+			return null;
 
 		return new Iterable<String>() {
 
@@ -159,12 +158,24 @@ public class RWayTrie implements Trie {
 		return get(x.next[i], key, d + 1);
 	}
 
+	/**
+	 * makes ASCII character by giving number of element in array
+	 * @param i
+	 * @return
+	 */
 	private char charByCode(int i) {
 		return (char) (i + ASCII_LOW_CASE_A);
 	}
 
-	private boolean ifArrayNotEmpty(Node[] nodes, int from) {
-		for (int i = from; i < nodes.length; i++) {
+	/**
+	 * check if array has only null references, start checking from begin
+	 * 
+	 * @param nodes
+	 * @param begin
+	 * @return
+	 */
+	private boolean isArrayNotEmpty(Node[] nodes, int begin) {
+		for (int i = begin; i < nodes.length; i++) {
 			if (nodes[i] != null) {
 				return true;
 			}
@@ -173,7 +184,7 @@ public class RWayTrie implements Trie {
 	}
 
 	private class TrieIterator implements Iterator<String> {
-		
+
 		private String pref;
 		private Node nodeLikePref;
 		private String currentWord;
@@ -183,15 +194,17 @@ public class RWayTrie implements Trie {
 		private Deque<Node[]> path = new LinkedList<>();
 
 		/**
+		 * construct class with param
+		 * 
 		 * @param pref
 		 */
 		public TrieIterator(String pref) {
-			expectedModCoun=modCount;
+			expectedModCoun = modCount;
 			this.pref = pref;
 			nodeLikePref = get(root, pref, 0);
 
 			if (nodeLikePref != null) {
-				if (ifArrayNotEmpty(nodeLikePref.next, 0)) {
+				if (isArrayNotEmpty(nodeLikePref.next, 0)) {
 					path.offer(nodeLikePref.next);
 					words.offer(pref);
 				}
@@ -209,8 +222,9 @@ public class RWayTrie implements Trie {
 
 		@Override
 		public String next() {
-			if(expectedModCoun!=modCount) throw new ConcurrentModificationException();
-			
+			if (expectedModCoun != modCount)
+				throw new ConcurrentModificationException();
+
 			String word = null;
 			if (currentWord != null) {
 				word = currentWord;
@@ -222,6 +236,9 @@ public class RWayTrie implements Trie {
 			return word;
 		}
 
+		/**
+		 * return current word from trie
+		 */
 		private String getWord() {
 			while (!path.isEmpty()) {
 				Node[] lastNodes = path.poll();
@@ -230,16 +247,16 @@ public class RWayTrie implements Trie {
 				for (int i = 0; i < R; i++) {
 
 					if (lastNodes[i] != null) {
-						if (ifArrayNotEmpty(lastNodes[i].next, 0)) {
+						if (isArrayNotEmpty(lastNodes[i].next, 0)) {
 							path.offer(lastNodes[i].next);
 							words.offer(lastWord + charByCode(i));
 						}
-						
+
 						Node tmp = lastNodes[i];
 						lastNodes[i] = null;
 
 						if (tmp.value != null) {
-							if ((i != R - 1) && ifArrayNotEmpty(lastNodes, i)) {
+							if ((i != R - 1) && isArrayNotEmpty(lastNodes, i)) {
 								path.addFirst(lastNodes);
 								words.addFirst(lastWord);
 							}

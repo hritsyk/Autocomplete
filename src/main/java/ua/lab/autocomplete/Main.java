@@ -9,9 +9,6 @@
  */
 package ua.lab.autocomplete;
 
-import java.util.Iterator;
-import java.util.List;
-
 import ua.lab.autocomplete.io.WordsPovider;
 import ua.lab.autocomplete.trie.RWayTrie;
 import ua.lab.autocomplete.trie.Trie;

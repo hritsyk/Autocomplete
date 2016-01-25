@@ -10,11 +10,8 @@
 package ua.lab.autocomplete;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import ua.lab.autocomplete.trie.RWayTrie;
 import ua.lab.autocomplete.trie.Trie;
 
 /**
@@ -22,7 +19,7 @@ import ua.lab.autocomplete.trie.Trie;
  *
  */
 public class PrefixMatches {
-	Trie trie;
+	private Trie trie;
 
 	/**
 	 * 
