@@ -96,5 +96,38 @@ public class RWayTrieTest {
 		assertEquals(null, iter.next());
 
 	}
+	
+	@Test
+	public void delete_WordExist_TrueReturned() throws Exception {
+
+		trie.add("abc", 3);
+		trie.add("abcd", 4);
+
+		assertTrue(trie.delete("abc"));
+	}
+	
+	@Test
+	public void delete_WordIsNotExist_FalseReturned() throws Exception {
+
+		trie.add("abc", 3);
+		trie.add("abcd", 4);
+
+		assertFalse(trie.delete("cmd"));
+	}
+	
+	@Test
+	public void size_OneWordIsExist_OneReturned() throws Exception {
+
+		trie.add("abcd", 4);
+
+		assertEquals(1, trie.size());
+	}
+	
+	@Test
+	public void size_ZeroElement_ZeroReturned() throws Exception {
+
+
+		assertEquals(0, trie.size());
+	}
 
 }
