@@ -33,7 +33,7 @@ public class Main {
 		prefixMatches.add(dictionary);
 		System.out.println(trie.size());
 		
-		Iterable<String> test=prefixMatches.wordsWithPrefix("ab", 3);
+		Iterable<String> test=prefixMatches.wordsWithPrefix("abc", 3);
 		for(String s: test){
 			System.out.println(s);
 		}

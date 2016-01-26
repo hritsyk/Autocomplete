@@ -9,9 +9,7 @@
  */
 package ua.lab.autocomplete;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import ua.lab.autocomplete.trie.Trie;
 
@@ -90,13 +88,15 @@ public class PrefixMatches {
 	 * @return
 	 */
 	public Iterable<String> wordsWithPrefix(String pref, int k) {
+		if (pref.length() < 2)
+			return null;
+
 		int maxWordLength = pref.length() + k;
 
 		Iterator<String> trieIterator = trie.wordsWithPrefix(pref).iterator();
 
 		return new Iterable<String>() {
-//			String currentWord = trieIterator.hasNext() ? trieIterator.next() : null;
-			String currentWord = getNextFromTrie();
+			String tmpWord = getNextFromTrie();
 
 			@Override
 			public Iterator<String> iterator() {
@@ -106,23 +106,23 @@ public class PrefixMatches {
 					@Override
 					public boolean hasNext() {
 
-						return currentWord!=null;
+						return tmpWord != null;
 					}
 
 					@Override
 					public String next() {
-						String next = currentWord;
-						currentWord=getNextFromTrie();
+						String next = tmpWord;
+						tmpWord = getNextFromTrie();
 						return next;
 					}
 				};
 			}
-			
-			private String getNextFromTrie(){
-				String word=null;
-				if(trieIterator.hasNext()){
-					word=trieIterator.next();
-					word=word.length()<=maxWordLength?word:null;
+
+			private String getNextFromTrie() {
+				String word = null;
+				if (trieIterator.hasNext()) {
+					word = trieIterator.next();
+					word = word.length() <= maxWordLength ? word : null;
 				}
 				return word;
 			}

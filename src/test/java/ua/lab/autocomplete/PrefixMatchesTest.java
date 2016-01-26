@@ -13,6 +13,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -37,39 +39,42 @@ public class PrefixMatchesTest {
 	private Trie trie;
 	@InjectMocks
 	private PrefixMatches prefixMatches;
-	
-	
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
-		trie=new RWayTrie();
+		trie = new RWayTrie();
 		prefixMatches = new PrefixMatches(trie);
 		MockitoAnnotations.initMocks(this);
 	}
 
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#add(java.lang.String[])}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#add(java.lang.String[])}.
 	 */
 	@Test
 	public void add_LessThen3Symbols_DidNotAdd() {
-		String word="ab";
-		assertEquals("addition word less then 3 simbols",0, prefixMatches.add(word));
+		String testWord = "ab";
+		assertEquals("addition word less then 3 simbols", 0, prefixMatches.add(testWord));
 	}
 
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#add(java.lang.String[])}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#add(java.lang.String[])}.
 	 */
 	@Test
 	public void add_MoreThen2Symbols_SuccessfulyAdded() {
-		String word="abc";
-		assertEquals("addition word more then 2 simbols",1, prefixMatches.add(word));
+		String word = "abc";
+		assertEquals("addition word more then 2 simbols", 1, prefixMatches.add(word));
 	}
 	
+	
+
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#contains(java.lang.String)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#contains(java.lang.String)}.
 	 */
 	@Test
 	public void contains_WordPresentInTrie_TrueReturned() {
@@ -78,99 +83,139 @@ public class PrefixMatchesTest {
 	}
 
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#contains(java.lang.String)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#contains(java.lang.String)}.
 	 */
 	@Test
 	public void contains_WordIsNotInTrie_FalseReturned() {
 		when(trie.contains("abc")).thenReturn(false);
 		assertEquals(false, prefixMatches.contains("abc"));
 	}
-	
+
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#contains(java.lang.String)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#contains(java.lang.String)}.
 	 */
 	@Test
 	public void contains_2SymbolWord_FalseReturned() {
 		assertEquals(false, prefixMatches.contains("ab"));
 	}
-	
+
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#delete(java.lang.String)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#delete(java.lang.String)}.
 	 */
 	@Test
 	public void delete_2SymbolWord_FalseReturned() {
-		assertEquals(false, prefixMatches.contains("ab"));
+		assertEquals(false, prefixMatches.delete("ab"));
+	}
+	
+	/**
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#delete(java.lang.String)}.
+	 */
+	@Test
+	public void delete_3orMoreSymbolWordIfWordExist_TrueReturned() {
+		String testWord="abc";
+		when(trie.delete(testWord)).thenReturn(true);
+		assertEquals(true, prefixMatches.delete(testWord));
 	}
 
+	/**
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#delete(java.lang.String)}.
+	 */
+	@Test
+	public void delete_3orMoreSymbolWordIfWordIsNotExist_falseReturned() {
+		String testWord="abc";
+		when(trie.delete(testWord)).thenReturn(false);
+		assertEquals(false, prefixMatches.delete(testWord));
+	}
+
+	
 	/**
 	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#size()}.
 	 */
 	@Test
 	public void size_OneItemInStructure_1Returned() {
-		when(trie.size()).thenReturn(1);
-		assertEquals(1, prefixMatches.size());
+		int size=1;
+		
+		when(trie.size()).thenReturn(size);
+		assertEquals(size, prefixMatches.size());
 	}
-	
+
 	/**
 	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#size()}.
 	 */
 	@Test
 	public void size_StructureIsEmpty_0Returned() {
-		when(trie.size()).thenReturn(0);
-		assertEquals(0, prefixMatches.size());
+		int size=0;
+		
+		when(trie.size()).thenReturn(size);
+		assertEquals(size, prefixMatches.size());
 	}
 
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String, int)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String, int)}
+	 * .
 	 */
 	@Test
-	public void WordsWithPrefixString_ifWordExist_NotEmptyIterableReturned() {
-		List<String> ls=new ArrayList<String>();
+	public void wordsWithPrefixString_ifWordExist_IteratorHasNextTrueReturned() {
+		String testPref="abc";
+		
+		List<String> ls = new ArrayList<String>();
 		ls.add("abc");
 		ls.add("abcd");
 		ls.add("abcde");
-		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
-		assertEquals(ls, prefixMatches.wordsWithPrefix("abc"));
+
+		when(trie.wordsWithPrefix(testPref)).thenReturn(ls);
+		assertEquals(true, prefixMatches.wordsWithPrefix(testPref).iterator().hasNext());
 	}
 
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String, int)}
+	 * .
 	 */
 	@Test
-	public void WordsWithPrefixString_ifWordIsNotExist_EmptyIterableReturned() {
+	public void wordsWithPrefixString_ifWordIsNotExist_IteratorHasNextFalseReturned() {
+		String testPref="ab";
 		
-		List<String> ls=new ArrayList<String>();
-		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
-		assertEquals(ls, prefixMatches.wordsWithPrefix("abc"));
-		
+		Iterable<String> testIterable = new Iterable<String>() {
+
+			@Override
+			public Iterator<String> iterator() {
+				return new Iterator<String>() {
+
+					@Override
+					public boolean hasNext() {
+						return false;
+					}
+
+					@Override
+					public String next() {
+						return null;
+					}
+				};
+			}
+		};
+		when(trie.wordsWithPrefix(testPref)).thenReturn(testIterable);
+		assertEquals(false, prefixMatches.wordsWithPrefix(testPref).iterator().hasNext());
 	}
+
+
 	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
-	 */
-	@Test
-	public void WordsWithPrefixStringInt_ifWordExist_IterableWithKPlus1WordsReturned() {
-		
-		List<String> ls=new ArrayList<String>();
-		ls.add("abc");
-		ls.add("abcd");
-		ls.add("abcv");
-		when(trie.wordsWithPrefix("abc")).thenReturn(ls);
-		assertEquals(ls, prefixMatches.wordsWithPrefix("abc",1));
-		
-	}
-	
-	/**
-	 * Test method for {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}.
+	 * Test method for
+	 * {@link ua.lab.autocomplete.PrefixMatches#wordsWithPrefix(java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void WordsWithPrefixStringInt_ifPrefLengthLessThan2_NullReturned() {
-		
+
 		when(trie.wordsWithPrefix("a")).thenReturn(null);
-		assertEquals(null, prefixMatches.wordsWithPrefix("a",1));
-		
+		assertEquals(null, prefixMatches.wordsWithPrefix("a", 1));
+
 	}
-	
-	
-	
 
 }

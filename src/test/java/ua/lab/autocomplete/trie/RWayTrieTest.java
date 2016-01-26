@@ -45,6 +45,18 @@ public class RWayTrieTest {
 	}
 
 	@Test
+	public void add_WordWhichAlreadyExist_SameSizeReturned() throws Exception {
+
+		trie.add("abc", 3);
+		trie.add("abcd", 4);
+		int actualSize = trie.size();
+		trie.add("abcd", 4);
+		int expectedSize = trie.size();
+
+		assertEquals(expectedSize, actualSize);
+	}
+
+	@Test
 	public void contains_WordExist_TrueReturned() throws Exception {
 
 		trie.add("abc", 3);
@@ -79,15 +91,36 @@ public class RWayTrieTest {
 
 		assertFalse(sizeAfter == sizeBefor);
 	}
+
+	@Test
+	public void delete_ExistWordDeleted_TrueReturned() throws Exception {
+
+		trie.add("abc", 3);
+		trie.add("abcd", 4);
+
+		boolean expResult = trie.delete("abc");
+
+		assertTrue(expResult);
+	}
 	
-	 
+	@Test
+	public void delete_WordIsNotExistDeleted_FalseReturned() throws Exception {
+
+		trie.add("abc", 3);
+		trie.add("abcd", 4);
+
+		boolean expResult = trie.delete("zxv");
+
+		assertFalse(expResult);
+	}
+
 	@Test
 	public void wordWithPrefix_TestIterator() throws Exception {
 
 		trie.add("abc", 3);
 		trie.add("abcd", 4);
 
-		Iterator<String> iter=trie.wordsWithPrefix("ab").iterator();
+		Iterator<String> iter = trie.wordsWithPrefix("ab").iterator();
 		assertTrue(iter.hasNext());
 		assertEquals("abc", iter.next());
 		assertTrue(iter.hasNext());
@@ -98,36 +131,44 @@ public class RWayTrieTest {
 	}
 	
 	@Test
-	public void delete_WordExist_TrueReturned() throws Exception {
-
+	public void wordWithPrefix_WordIsNotExist_IteratorNextNullReturned() throws Exception {
+		String testPref="zxv";
+		
 		trie.add("abc", 3);
 		trie.add("abcd", 4);
 
-		assertTrue(trie.delete("abc"));
+		Iterator<String> iter = trie.wordsWithPrefix(testPref).iterator();
+		assertEquals(null, iter.next());
+
 	}
 	
 	@Test
-	public void delete_WordIsNotExist_FalseReturned() throws Exception {
+	public void wordWithPrefix_PrefIsNotExist_IteratorHasNextFalseReturned() throws Exception {
 
+		String testPref="zxy";
+		
 		trie.add("abc", 3);
-		trie.add("abcd", 4);
-
-		assertFalse(trie.delete("cmd"));
+		
+		Iterator<String> iter = trie.wordsWithPrefix(testPref).iterator();
+		assertFalse(iter.hasNext());
 	}
 	
+	
+
 	@Test
 	public void size_OneWordIsExist_OneReturned() throws Exception {
-
+		int expectedSize=1;
+		
 		trie.add("abcd", 4);
 
-		assertEquals(1, trie.size());
+		assertEquals(expectedSize, trie.size());
 	}
-	
+
 	@Test
 	public void size_ZeroElement_ZeroReturned() throws Exception {
-
-
-		assertEquals(0, trie.size());
+		int expectedSize=0;
+		
+		assertEquals(expectedSize, trie.size());
 	}
 
 }
