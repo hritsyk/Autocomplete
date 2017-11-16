@@ -62,7 +62,4 @@ public interface Trie {
 
 }
 
-- При реализации не используйте реализаций Map. Разрешается использовать стандартные коллекции (List, Queue, Deque, ...)
-- Код должен быть покрыт модульными тестами. Используйте при тестировании мок-объекты там где это необходимо - http://www.vogella.com/tutorials/Mockito/article.html
-- Для тестирования работоспособности используйте список слов ftp://ftp.cs.princeton.edu/pub/cs226/autocomplete/words-333333.txt (отсюда http://www.cs.princeton.edu/courses/archive/fall13/cos226/assignments/autocomplete.html)
-- Код должен быть загружен на GitHub и представлять сосбой Maven проект
+- При реализации не используйте реализаций Map.
